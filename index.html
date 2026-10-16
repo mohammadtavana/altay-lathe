@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>شبیه‌ساز تراش آلتای</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap">
+<style>
+:root{--bg:#e8ecf0;--pn:#fff;--ink:#1c2630;--mut:#5b6773;--ln:#c9d1d9;--ac:#17609b;--vpa:#fdfdfe;--vpb:#bfcad6;--bad:#c62828;--wr:#9a5b00;--inf:#38566f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181d;--pn:#1c232b;--ink:#e6ebf0;--mut:#9aa7b3;--ln:#33404c;--ac:#59a9e6;--vpa:#3a4652;--vpb:#1b232b;--bad:#ff8a80;--wr:#ffc266;--inf:#9bb8cf}}
+:root[data-theme="dark"]{--bg:#14181d;--pn:#1c232b;--ink:#e6ebf0;--mut:#9aa7b3;--ln:#33404c;--ac:#59a9e6;--vpa:#3a4652;--vpb:#1b232b;--bad:#ff8a80;--wr:#ffc266;--inf:#9bb8cf}
+*{box-sizing:border-box}
+html,html body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 Vazirmatn,Tahoma,system-ui,sans-serif}
+.app{display:grid;grid-template-rows:auto 1fr;height:100%}
+.top{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--pn);border-bottom:1px solid var(--ln)}
+.top h1{font-size:16px;margin:0;flex:1}
+button,select,input,textarea{font:inherit;color:inherit}
+button,select{background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:4px 10px;cursor:pointer}
+button:hover{border-color:var(--ac)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.main{display:grid;grid-template-columns:1fr 370px;min-height:0;direction:ltr}
+.vw{display:flex;flex-direction:column;min-height:0;direction:rtl}
+.vp{flex:1;position:relative;min-height:260px;background:linear-gradient(var(--vpa),var(--vpb))}
+canvas{width:100%;height:100%;display:block;touch-action:none}
+.ov{position:absolute;display:flex;gap:6px;flex-wrap:wrap}
+.tl{top:8px;right:8px}
+.st{bottom:6px;right:8px;left:8px;font:12px ui-monospace,Menlo,monospace;direction:ltr;color:var(--ink);background:color-mix(in srgb,var(--pn) 80%,transparent);padding:3px 8px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg{top:8px;left:8px;font-size:12px;background:color-mix(in srgb,var(--pn) 80%,transparent);padding:3px 8px;border-radius:6px}
+.tr{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--pn);border-top:1px solid var(--ln)}
+.tr input[type=range]{flex:1;direction:ltr}
+.panel{direction:rtl;display:flex;flex-direction:column;min-height:0;background:var(--pn);border-right:1px solid var(--ln)}
+.tabs{display:flex;border-bottom:1px solid var(--ln)}
+.tabs button{flex:1;border:0;border-radius:0;background:none;padding:8px 4px;border-bottom:3px solid transparent}
+.tabs button.on{background:none;color:var(--ac);border-bottom-color:var(--ac);font-weight:600}
+.pg{display:none;padding:10px;overflow:auto;flex:1;min-height:0}
+.pg.on{display:flex;flex-direction:column;gap:8px}
+textarea{width:100%;flex:1;min-height:260px;direction:ltr;font:12px/1.5 ui-monospace,Menlo,monospace;background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:8px;white-space:pre;resize:none}
+label.f{display:flex;justify-content:space-between;align-items:center;gap:8px}
+label.f input,label.f select{width:120px;direction:ltr;background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:3px 6px}
+.hint{color:var(--mut);font-size:12px;margin:0}
+.s input{width:64px}#dm{color:var(--ink);font-size:13px}#dp{display:flex;flex-direction:column;gap:6px}
+.w{display:block;width:100%;text-align:right;border:1px solid var(--ln);border-right-width:5px;border-radius:6px;padding:6px 8px;margin-bottom:6px;background:var(--bg)}
+.w.danger{border-right-color:var(--bad)}.w.warn{border-right-color:var(--wr)}.w.info{border-right-color:var(--inf)}
+.w b{margin-left:6px}.w.danger b{color:var(--bad)}.w.warn b{color:var(--wr)}.w.info b{color:var(--inf)}
+.safe{border:1px solid var(--bad);color:var(--bad);border-radius:6px;padding:6px 8px;font-size:12px}
+@media (max-width:820px){.app{height:auto;min-height:100%}.main{grid-template-columns:1fr}.vp{flex:none;height:56vh}.panel{min-height:70vh;border-right:0;border-top:1px solid var(--ln)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><h1>شبیه‌ساز تراش آلتای (فانوک X/Z)</h1>
+<button id="bf">باز کردن فایل</button><button id="bs">نمونه شفت</button><button id="bg">نمونه خام چرخ‌دنده</button><button id="bh">نمونه نقشه: شفت پله‌دار</button><input id="fi" type="file" hidden></header>
+<div class="main">
+<div class="vw">
+<div class="vp" id="vp"><canvas id="cv"></canvas>
+<div class="ov tl"><button id="v1">ایزو</button><button id="v2">روبرو (صفحه XZ)</button><button id="vc">نمای برش</button><button id="vg">خام شفاف</button><button id="vr">پنهان‌کردن مسیر سریع</button></div>
+<div class="ov lg">قرمز: محور Z و مبدأ | سبز: محور X | نارنجی: حرکت سریع G00 | آبی: برش</div>
+<div class="ov st" id="st"></div></div>
+<div class="tr"><button id="pl">پخش</button><button id="rs">از ابتدا</button><input id="sl" type="range" min="0" max="0" value="0" aria-label="پیشرفت برنامه"><select id="sp"><option value="1">×1</option><option value="4">×4</option><option value="16">×16</option></select></div>
+</div>
+<aside class="panel">
+<div class="tabs"><button data-t="a" class="on">برنامه</button><button data-t="d">نقشه</button><button data-t="b">مبدأ و خام</button><button data-t="c" id="tc">هشدارها</button></div>
+<div class="pg on" id="pa"><textarea id="src" spellcheck="false" aria-label="G-code"></textarea>
+<p class="hint">متن G-code را بچسبانید یا فایل را باز کنید. هر تغییر فوراً دوباره بررسی می‌شود.</p></div>
+<div class="pg" id="pb"><div id="fl"></div>
+<label class="f">ابزارهای داخلی (شماره‌ها)<input id="it" type="text" value="3,4"></label><label class="f">عرض ابزار شیار (شماره:عرض)<input id="tw" type="text" value="4:2.2"></label>
+<label class="f">X در برنامه<select id="dia"><option value="1">قطر</option><option value="0">شعاع</option></select></label>
+<label class="f">عدد بدون اعشار<select id="nd"><option value="0.001">×0.001 (استاندارد فانوک)</option><option value="1">×1</option></select></label>
+<label class="f">سیستم G-code<select id="sys"><option value="A">A (G90/G92/G94 سیکل)</option><option value="B">B/C (G90 مطلق)</option></select></label>
+<p class="hint">Z0 و X0 همان نقطه‌ی قرمز است. «Z سطح جلوی خام» یعنی خام چند میلی‌متر جلوتر از Z0 است (مثلاً 2 یعنی ۲ میلی‌متر مجاز رو تراشی). مبدأ را مطابق آنچه روی دستگاه (G54/G50) تنظیم می‌کنید وارد کنید.</p></div>
+<div class="pg" id="pc"><div id="ss" class="hint"></div><div id="wl"></div>
+<div class="safe">نبودن هشدار به معنی امن بودن نیست. این برنامه فقط نوک ابزار را بررسی می‌کند (نه بدنه‌ی ابزار، ابزارگیر، مرغک و آفست‌ها). قبل از اجرا روی دستگاه: Dry Run، Single Block، فید و رپید روی ۲۵٪ و دست روی Emergency Stop.</div></div>
+<div class="pg" id="pd"><p class="hint">عکس نقشه‌ی قطعه‌ی تراشی را بده. برنامه پروفیل بیرونی را می‌خواند، تو اعداد را اصلاح می‌کنی و برنامه ساخته می‌شود. خواندن عکس ممکن است اشتباه کند؛ همیشه با نقشه تطبیق بده.</p>
+<input id="ak" type="password" hidden autocomplete="off" placeholder="کلید API شخصی (فقط روی همین کامپیوتر ذخیره می‌شود)"><input id="di" type="file" accept="image/*,application/pdf"><img id="dv" alt="نقشه" hidden style="max-width:100%;border:1px solid var(--ln);border-radius:6px"><button id="dr">خواندن خودکار نقشه</button><div id="dp"></div><button id="dg" class="on">ساخت برنامه و نمایش</button><div id="dm" role="status"></div></div></aside>
+</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),T=THREE,RES=.1,E=40;
+const num=v=>parseFloat(String(v).replace(/[۰-۹]/g,x=>x.charCodeAt(0)-1776).replace(/[٠-٩]/g,x=>x.charCodeAt(0)-1632).replace(/[٫،,]/g,'.'));
+const SAMPLE=`O0001 (SAMPLE SHAFT D30)
+G21 G40 G97 G99
+T0101
+G97 S1200 M03
+G00 X52. Z2.
+G00 Z0.
+G01 X0. F0.15
+G00 Z2.
+G00 X46.
+G01 Z-70. F0.25
+G01 X52.
+G00 Z2.
+G00 X42.
+G01 Z-45.
+G01 X52.
+G00 Z2.
+G00 X36.
+G01 Z-30.
+G01 X52.
+G00 Z2.
+G00 X28.
+G01 Z0. F0.1
+G01 X30. Z-1.
+G01 Z-27.
+G02 X36. Z-30. R3.
+G01 Z-45.
+G01 X42.
+G01 Z-70.
+G01 X52.
+G00 Z2.
+G28 U0 W0
+M05
+M30`;
+const FLD=[['sd','قطر خام (mm)',50],['fz','Z سطح جلوی خام',2],['so','طول بیرون‌زدگی خام از سه‌نظام',80],['cd','قطر سه‌نظام',160],['cl','طول سه‌نظام',60],['cz','Z وجه سه‌نظام (خالی = خودکار)',''],['mg','حاشیه ایمنی (mm)',2],['hx','نقطه رفرنس X (قطر)',250],['hz','نقطه رفرنس Z',250],['bd','قطر سوراخ اولیه خام (0 = پُر)',0]];
+$('fl').innerHTML=FLD.map(([k,n,d])=>`<label class="f">${n}<input id="${k}" type="text" inputmode="decimal" value="${d}"></label>`).join('');
+function cfg(){const c={};for(const[k,,d]of FLD){const v=num($(k).value);c[k]=isFinite(v)?v:d}
+c.sd=Math.max(1,c.sd);c.so=Math.max(1,c.so);c.cd=Math.max(1,c.cd);c.cl=Math.max(1,c.cl);
+c.dia=$('dia').value=='1';c.nd=+$('nd').value;c.sysA=$('sys').value=='A';
+c.sr=c.sd/2;c.cr=c.cd/2;c.cf=typeof c.cz=='number'?c.cz:c.fz-c.so;c.zE=c.cf-15;c.N=Math.floor((c.fz-c.zE)/RES)+1;c.ib=Math.max(0,c.bd||0)/2;c.it=new Set(($('it').value||'').split(/[,\s]+/).map(num).filter(isFinite));c.tw={};($('tw').value||'').split(/[,\s]+/).forEach(x=>{const q=x.split(':').map(num);if(isFinite(q[0])&&q[1]>0)c.tw[q[0]]=q[1]});return c}
+
+function cutPt(S,z,r,c,tl){const i=Math.round((c.fz-z)/RES),w=Math.max(1,Math.round((c.tw[tl]||4)/RES)),lo=Math.max(0,i-w),hi=Math.min(c.N-1,i);r=Math.abs(r);
+if(c.it.has(tl)){for(let j=lo;j<=hi;j++)if(r>S.i[j]&&r<S.o[j])S.i[j]=r}
+else for(let j=lo;j<=hi;j++)if(r<S.o[j])S.o[j]=Math.max(r,S.i[j])}
+
+function arcPts(z0,r0,z1,r1,cw,v,uf){let cz,cr;
+if('R' in v){const R=v.R*uf,dz=z1-z0,dr=r1-r0,d=Math.hypot(dz,dr);if(d<1e-9||Math.abs(R)<d/2*(1-1e-6))return null;
+const h=Math.sqrt(Math.max(0,R*R-d*d/4)),s=(cw?1:-1)*(R>0?1:-1);cz=(z0+z1)/2+s*h*dr/d;cr=(r0+r1)/2-s*h*dz/d}
+else if('I' in v||'K' in v){cz=z0+(v.K||0)*uf;cr=r0+(v.I||0)*uf}else return null;
+const rad=Math.hypot(z0-cz,r0-cr),rad2=Math.hypot(z1-cz,r1-cr);if(rad<1e-9)return null;
+const a0=Math.atan2(r0-cr,z0-cz),a1=Math.atan2(r1-cr,z1-cz);let d=a1-a0;
+if(cw){while(d>1e-9)d-=2*Math.PI;if(Math.abs(d)<1e-9)d=-2*Math.PI}else{while(d<-1e-9)d+=2*Math.PI;if(Math.abs(d)<1e-9)d=2*Math.PI}
+const n=Math.min(4000,Math.max(8,Math.ceil(Math.abs(d)*rad/RES))),o=[];
+for(let k=1;k<n;k++){const a=a0+d*k/n;o.push([cz+rad*Math.cos(a),cr+rad*Math.sin(a)])}o.push([z1,r1]);
+return{pts:o,err:Math.abs(rad-rad2)}}
+
+function parse(txt,c){
+const L=txt.split(/\r?\n/),P=[],W=[],ns=new Set();let uf=1,abs=true,mo=null,sp=false,F=0,end=false,seg=0,tl=0;
+let z=c.hz,r=c.hx/2;P.push({z,r,rapid:true,start:true,line:0,sp:false,seg:0});
+const wr=(t,m,ln)=>W.push({t,m,line:ln,idx:P.length-1}),once=(k,t,m,ln)=>{if(!ns.has(k)){ns.add(k);wr(t,m,ln)}};
+const push=(a,b,rp,ln)=>P.push({z:a,r:b,rapid:rp,start:false,line:ln,sp,seg,tl});
+const mv=(z2,r2,rp,ln)=>{const dz=z2-z,dr=r2-r,len=Math.hypot(dz,dr);if(len<1e-9)return;
+const n=Math.min(4000,Math.max(1,Math.ceil(rp?len:Math.max(Math.abs(dz)/RES,len/2))));seg++;
+for(let k=1;k<=n;k++)push(z+dz*k/n,r+dr*k/n,rp,ln);z=z2;r=r2};
+for(let li=0;li<L.length&&!end;li++){const ln=li+1;
+const s=L[li].replace(/\(.*?\)/g,'').replace(/;.*/,'').toUpperCase().trim();if(!s||s[0]=='%')continue;
+const gs=[],ms=[],v={};
+for(const m of s.matchAll(/([A-Z])\s*([-+]?(?:\d+\.?\d*|\.\d+))/g)){const a=m[1],n=parseFloat(m[2]),dot=m[2].includes('.');
+if(a=='G')gs.push(n);else if(a=='M')ms.push(n);else if('XZUWIKR'.includes(a))v[a]=dot?n:n*c.nd;else if(a!='N'&&a!='O')v[a]=n}
+if(gs.includes(20))uf=25.4;if(gs.includes(21))uf=1;
+let cyc=0,home=false,setp=false;
+for(const g of gs){
+if(g<=3)mo=g;else if(g==32)mo=1;
+else if(g==28||g==30)home=true;
+else if(g==50)setp=true;
+else if(g==90){if(c.sysA)cyc=g;else abs=true}
+else if(g==91)abs=false;
+else if(g==92){if(c.sysA)cyc=g;else setp=true}
+else if(g==94){if(c.sysA)cyc=g}
+else if(g>=70&&g<=89)cyc=g;
+else if(g==41||g==42)once('nc','info','G41/G42 نادیده گرفته شد: مسیر برنامه‌ریزی‌شده رسم می‌شود نه مسیر جبران‌شده',ln);
+else if(g>=54&&g<=59)once('wo','info','G54..G59 اعمال نمی‌شود: مبدأ همان است که در تب «مبدأ و خام» تعریف شده',ln);
+else if([4,17,18,19,20,21,40,95,96,97,98,99].includes(g)){}
+else wr('warn','G'+g+' شبیه‌سازی نشد',ln)}
+for(const m of ms){if(m==3||m==4)sp=true;else if(m==5)sp=false;else if(m==98)wr('danger','M98 (زیربرنامه) باز نمی‌شود؛ مسیر ناقص است',ln)}
+if(v.T!==undefined){tl=v.T>=100?Math.floor(v.T/100):v.T}if(v.T!==undefined)once('t','info','آفست و هندسه‌ی ابزار (T) اعمال نمی‌شود: نوک ابزار روی نقطه‌ی برنامه فرض شده',ln);
+if(v.F!==undefined)F=v.F;
+const hasAx=['X','Z','U','W'].some(k=>k in v);
+if(cyc){wr('danger','G'+cyc+' (سیکل) شبیه‌سازی نمی‌شود؛ مسیر ناقص است. خطوط پروفیل بعد از G71/G72/G73 هم به‌صورت حرکت عادی رسم می‌شوند',ln)}
+else if(hasAx||home){
+let tz=z,tr=r;const inc=!abs;
+if('X' in v){const q=(c.dia?v.X/2:v.X)*uf;tr=inc?r+q:q}
+if('U' in v)tr=r+(c.dia?v.U/2:v.U)*uf;
+if('Z' in v){const q=v.Z*uf;tz=inc?z+q:q}
+if('W' in v)tz=z+v.W*uf;
+if(home){mv(tz,tr,true,ln);mv(c.hz,c.hx/2,true,ln)}
+else if(setp){z=tz;r=tr;P.push({z,r,rapid:true,start:true,line:ln,sp,seg});once('sp','info','G50/G92: فقط موقعیت جاری تنظیم شد (نه جابجایی واقعی مبدأ)',ln)}
+else{if(mo===null){wr('warn','حرکت بدون G00/G01؛ به‌صورت سریع در نظر گرفته شد',ln);mo=0}
+if(mo==0)mv(tz,tr,true,ln);
+else if(mo==1){if(!(F>0))once('nf','warn','فید F تعریف نشده',ln);mv(tz,tr,false,ln)}
+else{if(!(F>0))once('nf','warn','فید F تعریف نشده',ln);
+const A=arcPts(z,r,tz,tr,mo==2,v,uf);
+if(!A){wr('danger','قوس نامعتبر (R یا I/K نادرست)؛ به‌صورت خط مستقیم رسم شد',ln);mv(tz,tr,false,ln)}
+else{if(A.err>.02+.001*Math.abs(tz-z))wr('warn','شعاع ابتدا و انتهای قوس برابر نیست (اختلاف '+A.err.toFixed(3)+')',ln);
+seg++;for(const q of A.pts)push(q[0],q[1],false,ln);z=tz;r=tr}}}}
+if(ms.some(m=>m==30||m==2))end=true}
+return{P,W,L}}
+
+function analyze(P,W,c){const S={o:new Float32Array(c.N).fill(c.sr),i:new Float32Array(c.N).fill(c.ib)},fl=new Set();
+const f=(p,k,t,m)=>{const key=p.seg+k;if(fl.has(key))return;fl.add(key);W.push({t,m,line:p.line,idx:P.indexOf(p)})};
+for(let k=1;k<P.length;k++){const p=P[k];if(p.start)continue;
+if(p.z<=c.cf+c.mg&&p.z>=c.cf-c.cl-c.mg&&Math.abs(p.r)<=c.cr+c.mg)f(p,'c','danger','نوک ابزار وارد ناحیه‌ی سه‌نظام می‌شود');
+if(p.rapid){const i=Math.round((c.fz-p.z)/RES);if(p.z<c.fz-.001&&i<c.N&&Math.abs(p.r)>S.i[i]+.02&&Math.abs(p.r)<S.o[i]-.02)f(p,'m','danger','حرکت سریع (G00) داخل مواد خام')}
+else{cutPt(S,p.z,p.r,c,p.tl);if(!p.sp)f(p,'s','warn','برش با اسپیندل خاموش (قبل از M03)');if(p.r<-.01)f(p,'n','warn','X منفی؛ ابزار از محور رد شده')}}
+W.sort((x,y)=>x.idx-y.idx)}
+
+/* ---- 3D ---- */
+const rd=new T.WebGLRenderer({canvas:$('cv'),antialias:true,alpha:true});rd.setPixelRatio(Math.min(devicePixelRatio,2));rd.localClippingEnabled=true;
+const sc=new T.Scene(),cam=new T.PerspectiveCamera(40,1,1,20000),dl=new T.DirectionalLight(0xffffff,.8);
+sc.add(new T.AmbientLight(0xffffff,.7),dl);
+const O={th:-.7,ph:1.1,R:300,t:new T.Vector3()},pl=new T.Plane(new T.Vector3(0,0,-1),0);
+let need=1,G=null,wp=null,mk=null,act=null,ghost=null,pairAt=[],P=[],W=[],L=[],C=null,cur={i:0,a:null},IDX=0,play=false,acc=0,secOn=false,gh=true,showR=true;
+function place(){const s=Math.sin(O.ph);cam.position.set(O.t.x+O.R*s*Math.sin(O.th),O.t.y+O.R*Math.cos(O.ph),O.t.z+O.R*s*Math.cos(O.th));cam.lookAt(O.t);dl.position.copy(cam.position);need=1}
+function view(th,ph){O.th=th;O.ph=ph;if(C){O.t.set((C.fz+C.cf-C.cl)/2,0,0);O.R=(C.fz-C.cf+C.cl)*1.3+60}place()}
+new ResizeObserver(()=>{const e=$('vp');rd.setSize(e.clientWidth,e.clientHeight,false);cam.aspect=e.clientWidth/Math.max(1,e.clientHeight);cam.updateProjectionMatrix();need=1}).observe($('vp'));
+const ps=new Map(),cv=$('cv');
+cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);ps.set(e.pointerId,[e.clientX,e.clientY])};
+cv.onpointermove=e=>{const o=ps.get(e.pointerId);if(!o)return;const n=[e.clientX,e.clientY];
+if(ps.size==1){O.th-=(n[0]-o[0])*.008;O.ph=Math.min(3.09,Math.max(.05,O.ph-(n[1]-o[1])*.008))}
+else if(ps.size==2){const q=[...ps.entries()].find(([k])=>k!=e.pointerId)[1],d0=Math.hypot(o[0]-q[0],o[1]-q[1]),d1=Math.hypot(n[0]-q[0],n[1]-q[1]);if(d1>0)O.R=Math.max(10,O.R*d0/d1)}
+ps.set(e.pointerId,n);place()};
+cv.onpointerup=cv.onpointercancel=e=>ps.delete(e.pointerId);
+cv.addEventListener('wheel',e=>{e.preventDefault();O.R=Math.max(10,O.R*Math.exp(e.deltaY*.001));place()},{passive:false});
+
+function build(){
+if(G){G.traverse(o=>{o.geometry&&o.geometry.dispose()});sc.remove(G)}
+G=new T.Group();sc.add(G);const rot=-Math.PI/2;
+const ch=new T.Mesh(new T.CylinderGeometry(C.cr,C.cr,C.cl,48),new T.MeshStandardMaterial({color:0x66717d,roughness:.6,metalness:.4}));ch.rotation.z=rot;ch.position.x=C.cf-C.cl/2;G.add(ch);
+ghost=new T.Mesh(new T.CylinderGeometry(C.sr,C.sr,C.fz-C.zE,48),new T.MeshBasicMaterial({color:0x4a90c8,transparent:true,opacity:.12,depthWrite:false}));ghost.rotation.z=rot;ghost.position.x=(C.fz+C.zE)/2;ghost.visible=gh;G.add(ghost);
+wp=new T.Mesh(new T.BufferGeometry(),new T.MeshStandardMaterial({color:0xa9b8c8,roughness:.45,metalness:.55,side:T.DoubleSide,clippingPlanes:secOn?[pl]:[]}));wp.rotation.z=rot;G.add(wp);
+const al=C.sd*.9,ar=(d,h)=>new T.ArrowHelper(d,new T.Vector3(),al,h,al*.15,al*.08);
+G.add(ar(new T.Vector3(1,0,0),0xd32f2f),ar(new T.Vector3(0,1,0),0x2e9e4f));
+G.add(new T.Mesh(new T.SphereGeometry(Math.max(1.2,C.sd*.03),16,12),new T.MeshBasicMaterial({color:0xd32f2f})));
+const n=P.length,pos=[],col=[];pairAt=[0];let pc=0;
+for(let k=1;k<n;k++){const p=P[k];if(!p.start&&(showR||!p.rapid)){const q=P[k-1],cl=p.rapid?[.88,.54,0]:[.09,.38,.62];pos.push(q.z,q.r,0,p.z,p.r,0);col.push(...cl,...cl);pc++}pairAt.push(pc)}
+
+const mkL=(op)=>{const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('color',new T.Float32BufferAttribute(col,3));return new T.LineSegments(g,new T.LineBasicMaterial({vertexColors:true,transparent:op<1,opacity:op}))};
+G.add(mkL(.22));act=mkL(1);G.add(act);
+const wpos=[],wcol=[];for(const w of W){const p=P[w.idx];wpos.push(p.z,p.r,0);wcol.push(...(w.t=='danger'?[.85,.1,.1]:w.t=='warn'?[.9,.55,0]:[.3,.5,.7]))}
+const wg=new T.BufferGeometry();wg.setAttribute('position',new T.Float32BufferAttribute(wpos,3));wg.setAttribute('color',new T.Float32BufferAttribute(wcol,3));
+G.add(new T.Points(wg,new T.PointsMaterial({size:9,sizeAttenuation:false,vertexColors:true})));
+const h=Math.max(3,C.sd*.12),cg=new T.ConeGeometry(h*.3,h,12);cg.rotateX(Math.PI);cg.translate(0,h/2,0);
+mk=new T.Mesh(cg,new T.MeshBasicMaterial({color:0xffc400}));G.add(mk);cur={i:0,a:null}}
+
+function show(i){if(!P.length)return;i=Math.max(0,Math.min(P.length-1,i|0));IDX=i;$('sl').value=i;
+if(!cur.a||i<cur.i){cur.a={o:new Float32Array(C.N).fill(C.sr),i:new Float32Array(C.N).fill(C.ib)};cur.i=0}
+for(let k=cur.i+1;k<=i;k++){const p=P[k];if(!p.start&&!p.rapid)cutPt(cur.a,p.z,p.r,C,p.tl)}cur.i=i;
+const I=cur.a.i,N=C.N,v=[],O=cur.a.o.map((x,j)=>Math.max(x,I[j])),kp=(q,j)=>j==N-1||j==0||Math.abs(q[j]-q[j-1])>5e-4||Math.abs(q[j]-q[j+1])>5e-4;
+for(let j=N-1;j>=0;j--)if(kp(O,j))v.push(new T.Vector2(O[j],C.fz-j*RES));
+for(let j=0;j<N;j++)if(kp(I,j))v.push(new T.Vector2(I[j],C.fz-j*RES));
+v.push(v[0].clone());
+wp.geometry.dispose();wp.geometry=new T.LatheGeometry(v,64);
+const p=P[i];mk.position.set(p.z,p.r,0);act.geometry.setDrawRange(0,(pairAt[i]||0)*2);
+$('st').textContent=(p.line?'N'+p.line+': '+(L[p.line-1]||'').trim()+'   ':'')+'Z'+p.z.toFixed(3)+'  X'+(p.r*2).toFixed(3);need=1}
+
+function lists(){const b=$('wl');b.innerHTML='';const nm={danger:'خطر',warn:'هشدار',info:'توضیح'};
+for(const w of W){const d=document.createElement('button');d.className='w '+w.t;d.innerHTML='<b>'+nm[w.t]+'</b>'+(w.line?'خط '+w.line+': ':'')+w.m;d.onclick=()=>{play=false;$('pl').textContent='پخش';show(w.idx)};b.append(d)}
+if(!W.length)b.textContent='موردی پیدا نشد.';
+const nd=W.filter(w=>w.t=='danger').length;$('tc').textContent='هشدارها'+(nd?' ('+nd+' خطر)':W.length?' ('+W.length+')':'');
+let zmin=1e9,zmax=-1e9,xmax=0;for(const p of P){if(p.rapid)continue;zmin=Math.min(zmin,p.z);zmax=Math.max(zmax,p.z);xmax=Math.max(xmax,Math.abs(p.r)*2)}
+$('ss').textContent='نقاط مسیر: '+P.length+(zmax>-1e9?' | برش از Z'+zmin.toFixed(1)+' تا Z'+zmax.toFixed(1)+' | بیشترین قطر برش X'+xmax.toFixed(1):'')}
+
+function run(keepView){C=cfg();const t=$('src').value;({P,W,L}=parse(t,C));analyze(P,W,C);if(P.length<2){W.unshift({t:'danger',m:'هیچ حرکت G00/G01/G02/G03 پیدا نشد؛ متن G-code نیست یا فرمت آن ناشناخته است',line:0,idx:0});tab('c')}build();
+$('sl').max=P.length-1;lists();if(!keepView)view(O.th,O.ph);show(P.length-1);
+try{localStorage.setItem('altay3',JSON.stringify({t,c:[...FLD.map(f=>$(f[0]).value),$('dia').value,$('nd').value,$('sys').value,$('it').value,$('tw').value]}))}catch(e){}}
+
+let tm;const later=()=>{clearTimeout(tm);tm=setTimeout(()=>run(true),350)};
+$('src').oninput=later;document.querySelectorAll('#pb input,#pb select').forEach(e=>e.onchange=()=>run(false));
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x==b));['a','b','c','d'].forEach(k=>$('p'+k).classList.toggle('on',k==b.dataset.t))});
+$('bs').onclick=()=>{$('src').value=SAMPLE;run(false)};
+$('bh').onclick=()=>{$('src').value=`O0003 (STEPPED SHAFT SAMPLE-001)
+G21 G40 G97 G99
+T0101
+G97 S1000 M03
+G00 X42. Z2.
+G00 Z0.
+G01 X0. F0.15
+G00 Z2.
+G00 X38.5
+G01 Z-60. F0.3
+G01 X42.
+G00 Z2.
+G00 X34.
+G01 Z-45.
+G01 X42.
+G00 Z2.
+G00 X29.
+G01 Z-20.
+G01 X36.
+G00 Z2.
+G00 X26.5
+G01 Z-20.
+G01 X36.
+G00 Z2.
+G00 X21.
+G01 Z0. F0.1
+G01 X23.
+G01 X25. Z-1.
+G01 Z-18.
+G02 X29. Z-20. R2.
+G01 X32.
+G01 Z-45.
+G01 X38.
+G01 Z-60.
+G01 X42.
+G00 Z2.
+G28 U0 W0
+M05
+M30`;const v={sd:40,fz:2,so:70,cd:160,cl:60,cz:'',bd:0};for(const k in v)$(k).value=v[k];$('dia').value='1';$('sys').value='A';run(false)};
+$('bg').onclick=()=>{$('src').value=`O0002 (GEAR BLANK OD100 HUB D50 - SAMPLE)
+G21 G40 G97 G99
+T0101
+G97 S800 M03
+G00 X107. Z2.
+G00 Z0.
+G01 X0. F0.2
+G00 Z2.
+G00 X101.
+G01 Z-50. F0.3
+G01 X107.
+G00 Z2.
+G00 X91.
+G01 Z-10. F0.3
+G01 X102.
+G00 Z2.
+G00 X81.
+G01 Z-10.
+G01 X102.
+G00 Z2.
+G00 X71.
+G01 Z-10.
+G01 X102.
+G00 Z2.
+G00 X61.
+G01 Z-10.
+G01 X102.
+G00 Z2.
+G00 X51.
+G01 Z-10.
+G01 X102.
+G00 Z2.
+G00 X46.
+G01 Z0. F0.1
+G01 X50. Z-2.
+G01 Z-10.
+G01 X98.
+G01 X100. Z-11.
+G01 Z-49.
+G01 X98. Z-50.
+G01 X107.
+G00 Z2.
+G28 U0 W0
+M05
+M30`;const v={sd:105,fz:2,so:65,cd:200,cl:70,cz:'',bd:0};for(const k in v)$(k).value=v[k];$('dia').value='1';$('sys').value='A';run(false)};
+$('bf').onclick=()=>$('fi').click();
+let DF=null;const showPrev=f=>{if(!/^image\//.test(f.type))return;const i=$('dv');i.src=URL.createObjectURL(f);i.hidden=false};$('di').onchange=e=>{const f=e.target.files[0];if(f){DF=null;showPrev(f)}};const BIN=/[\u0000-\u0008\u000e-\u001f\ufffd]/;
+function tab(k){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x.dataset.t==k));['a','b','c','d'].forEach(j=>$('p'+j).classList.toggle('on',j==k))}
+$('fi').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+if(/^image\//.test(f.type)||/\.(jpe?g|png|webp|heic|pdf)$/i.test(f.name)){DF=f;showPrev(f);tab('d');$('dm').textContent='این فایل عکس یا نقشه است، نه G-code. برای ساخت برنامه از روی آن «خواندن خودکار نقشه» را بزن.';return}
+const r=new FileReader();r.onload=()=>{const t=String(r.result);if(BIN.test(t.slice(0,2000))){tab('d');$('dm').textContent='این فایل متن G-code نیست و بارگذاری نشد.';return}$('src').value=t;run(false)};r.readAsText(f)};
+$('v1').onclick=()=>view(-.7,1.1);$('v2').onclick=()=>view(0,Math.PI/2);
+$('vc').onclick=e=>{secOn=!secOn;e.target.classList.toggle('on',secOn);wp.material.clippingPlanes=secOn?[pl]:[];wp.material.needsUpdate=true;need=1};
+$('vg').onclick=e=>{gh=!gh;e.target.classList.toggle('on',!gh);ghost.visible=gh;need=1};
+$('vr').onclick=e=>{showR=!showR;e.target.classList.toggle('on',!showR);build();show(IDX)};
+$('sl').oninput=e=>{play=false;$('pl').textContent='پخش';show(+e.target.value)};
+$('pl').onclick=()=>{play=!play;$('pl').textContent=play?'توقف':'پخش';if(play&&IDX>=P.length-1)show(0)};
+$('rs').onclick=()=>{play=false;$('pl').textContent='پخش';show(0)};
+(function loop(){requestAnimationFrame(loop);
+if(play){acc+=P.length/600*(+$('sp').value);const s=Math.floor(acc);if(s>=1){acc-=s;if(IDX+s>=P.length-1){show(P.length-1);play=false;$('pl').textContent='پخش'}else show(IDX+s)}}
+if(need){rd.render(sc,cam);need=0}})();
+
+/* ---- drawing -> program ---- */
+const PR={mode:'b',bore:0,hole:0,ga:0,gm:'n',gE:6.3,gW:2.2,gD:55,bT:3,gT:4,sd:40,cf:1,ce:0,fr:0,sc:0,steps:[],pd:4,al:1,fR:.3,fF:.1,sp:1000};
+const PF=[['sd','قطر خام'],['cf','پخ جلو'],['ce','پخ انتهای قطعه'],['fr','شعاع فیلت گوشه‌ی داخلی'],['sc','پخ لبه‌ی شانه'],['pd','عمق پاس خشن (قطر)'],['al','مجاز پرداخت (قطر)'],['fR','فید خشن'],['fF','فید پرداخت'],['sp','دور اسپیندل (S)'],['ga','مجاز سنگ‌زنی روی قطر'],['bore','قطر سوراخ داخلی (0 = ندارد)'],['hole','قطر سوراخ اولیه خام (لوله/مته)'],['bT','شماره ابزار بورینگ'],['gE','فاصله‌ی انتها تا شیار'],['gW','عرض شیار'],['gD','قطر شیار'],['gT','شماره ابزار شیار']];
+function pform(){$('dp').innerHTML=PF.map(([k,n])=>`<label class="f">${n}<input data-k="${k}" type="text" inputmode="decimal" value="${PR[k]}"></label>`).join('')+`<label class="f">نوع کار<select data-k="mode">${[['b','خشن + پرداخت'],['r','فقط خشن (براده‌برداری)'],['f','فقط پرداخت']].map(([v,n])=>`<option value="${v}"${PR.mode==v?' selected':''}>${n}</option>`).join('')}</select></label>`+`<label class="f">محل شیار<select data-k="gm">${[['n','بدون شیار'],['a','الف: فاصله تا لبه‌ی نزدیک مرکز'],['b','ب: فاصله تا لبه‌ی نزدیک انتها']].map(([v,n])=>`<option value="${v}"${PR.gm==v?' selected':''}>${n}</option>`).join('')}</select></label>`+'<b>پله‌ها (از جلوی قطعه به سمت سه‌نظام)</b>'+PR.steps.map((s,i)=>`<label class="f s">قطر<input data-i="${i}" data-j="d" type="text" inputmode="decimal" value="${s.d}">طول<input data-i="${i}" data-j="l" type="text" inputmode="decimal" value="${s.l}"><button data-x="${i}" aria-label="حذف پله">×</button></label>`).join('')+'<div><button id="da">افزودن پله</button> <button id="dv">معکوس‌کردن ترتیب</button></div>'}
+function genBore(p,g,f,T,W){const ga=p.ga||0,b=p.bore-ga,h=p.hole||0;
+if(!(h>0)){W.push('سوراخ داخلی ساخته نشد: قطر سوراخ اولیه‌ی خام را وارد کن (خام باید لوله یا مته‌خورده باشد)');return}
+if(h>b-p.al-1e-6){W.push('قطر سوراخ اولیه باید از قطر بورینگ منهای مجاز پرداخت کوچک‌تر باشد');return}
+const tn=n=>'T'+String(n).padStart(2,'0')+String(n).padStart(2,'0'),cb=.5;
+g('G28 U0 W0');g(tn(p.bT));g('G97 S'+Math.round(p.sp)+' M03');
+if(p.mode!='f'){const lv=[];for(let x=h+3;x<b-p.al-1e-6;x+=3)lv.push(x);lv.push(b-p.al);
+for(const x of lv){g('G00 X'+f(x)+' Z2.');g('G01 Z-'+f(T)+' F'+f(p.fR));g('G01 X'+f(x-1));g('G00 Z2.')}}
+if(p.mode!='r'){g('G00 X'+f(h)+' Z2.');g('G01 Z0. F'+f(p.fF));g('G01 X'+f(b+2*cb));g('G01 X'+f(b)+' Z-'+f(cb));g('G01 Z-'+f(T));g('G01 X'+f(h));g('G00 Z2.');
+if(p.gm=='a'||p.gm=='b'){const e=p.gE,w=p.gW,gs=p.gm=='a'?[[e-w,e],[T-e,T-e+w]]:[[e,e+w],[T-e-w,T-e]];
+if(p.gD<=b+.01)W.push('قطر شیار باید بزرگ‌تر از قطر سوراخ باشد');else if(gs.some(q=>q[0]<0||q[1]>T))W.push('شیار از طول قطعه بیرون می‌زند');
+else{g('G28 U0 W0');g(tn(p.gT));g('G97 S'+Math.round(p.sp*.6)+' M03');
+for(const q of gs){g('G00 X'+f(b-3)+' Z2.');g('G00 Z-'+f(q[1]));g('G01 X'+f(p.gD)+' F0.05');g('G04 P500');g('G01 X'+f(b-3));g('G00 Z2.')}}}}}
+function genG(p){const st=p.steps.filter(s=>s.d>0&&s.l>0).map(s=>({d:s.d+(p.ga||0),l:s.l})),W=[];
+if(!st.length)return{err:'هیچ پله‌ای تعریف نشده. اول «خواندن خودکار نقشه» را بزن و اعداد را بررسی کن، یا با «افزودن پله» قطر و طول هر پله را دستی وارد کن.'};
+if(!(p.pd>0)||!(p.sd>0))return{err:'قطر خام و عمق پاس باید مثبت باشند'};
+for(let i=1;i<st.length;i++)if(st[i].d<st[i-1].d-1e-9)return{err:'قطر پله‌ها باید از جلو به سمت سه‌نظام کم‌نشدنی باشد. «معکوس‌کردن ترتیب» را بزن یا قطعه را در دو بستن جدا بساز.'};
+if(p.sd<st[st.length-1].d+p.al)return{err:'قطر خام باید حداقل برابر بزرگ‌ترین قطر + مجاز پرداخت باشد'};
+const f=n=>{n=Math.round(n*1000)/1000;if(n==0)n=0;return n.toFixed(3).replace(/0+$/,'')};
+const zs=[];let T=0;for(const s of st){T+=s.l;zs.push(T)}
+const zst=i=>i?zs[i-1]:0,so=p.sd+2,L=[],g=s=>L.push(s);
+g('O0004 (AUTO FROM DRAWING - CHECK BEFORE USE)');g('G21 G40 G97 G99');g('T0101');g('G97 S'+Math.round(p.sp)+' M03');
+g('G00 X'+f(so)+' Z2.');g('G00 Z0.');g('G01 X0. F'+f(p.fR/2));g('G00 Z2.');
+let lv=[];for(let x=p.sd-p.pd;x>st[0].d+p.al+1e-6;x-=p.pd)lv.push(x);
+st.forEach(s=>{if(s.d+p.al<p.sd-1e-6)lv.push(s.d+p.al)});
+lv.sort((a,b)=>b-a);lv=lv.filter((x,i)=>!i||lv[i-1]-x>1e-3);if(p.mode=='f')lv=[];
+for(const x of lv){let ze=T;for(let i=0;i<st.length;i++)if(st[i].d+p.al>x+1e-9){ze=zst(i);break}
+if(ze<=0)continue;g('G00 X'+f(x));g('G01 Z-'+f(ze)+' F'+f(p.fR));g('G01 X'+f(so));g('G00 Z2.')}
+const fi=L.length;const d0=st[0].d,cf=Math.max(0,Math.min(p.cf,d0/2-.1));
+g('G00 X'+f(d0-2*cf-2)+' Z2.');g('G01 Z0. F'+f(p.fF));
+if(cf>0){g('G01 X'+f(d0-2*cf));g('G01 X'+f(d0)+' Z-'+f(cf))}else g('G01 X'+f(d0));
+for(let i=0;i<st.length;i++){const ze=zs[i];
+if(i<st.length-1){if(st[i+1].d>st[i].d+1e-9){const gap=(st[i+1].d-st[i].d)/2;
+const R=Math.max(0,Math.min(p.fr,gap,st[i].l-(i==0?cf:0)));if(R<p.fr-1e-9)W.push('فیلت بعد از پله '+(i+1)+' کوچک‌تر از مقدار خواسته‌شده شد');
+const c=Math.max(0,Math.min(p.sc,gap-R));
+if(R>0){g('G01 Z-'+f(ze-R));g('G02 X'+f(st[i].d+2*R)+' Z-'+f(ze)+' R'+f(R))}else g('G01 Z-'+f(ze));
+if(c>0){g('G01 X'+f(st[i+1].d-2*c));g('G01 X'+f(st[i+1].d)+' Z-'+f(ze+c))}else g('G01 X'+f(st[i+1].d))}}
+else{const ce=Math.max(0,Math.min(p.ce,st[i].d/2-.1,st[i].l));
+if(ce>0){g('G01 Z-'+f(T-ce));g('G01 X'+f(st[i].d-2*ce)+' Z-'+f(T))}else g('G01 Z-'+f(T));
+g('G01 X'+f(so))}}
+if(p.mode=='r')L.length=fi;g('G00 Z2.');if(p.bore>0)genBore(p,g,f,T,W);g('G28 U0 W0');g('M05');g('M30');
+return{code:L.join('\n'),W,T}}
+$('dp').oninput=e=>{const t=e.target;if(t.dataset.k)PR[t.dataset.k]=t.tagName=='SELECT'?t.value:(num(t.value)||0);else if(t.dataset.j)PR.steps[+t.dataset.i][t.dataset.j]=num(t.value)||0};
+$('dp').onclick=e=>{const t=e.target;if(t.dataset.x!==undefined){PR.steps.splice(+t.dataset.x,1);pform()}else if(t.id=='da'){PR.steps.push({d:0,l:0});pform()}else if(t.id=='dv'){PR.steps.reverse();pform()}};
+$('dg').onclick=()=>{try{if(!PR.steps.some(s=>s.d>0&&s.l>0)&&($('di').files[0]||DF)&&SM){$('dm').textContent='جدول پله‌ها خالی است؛ اول نقشه خوانده می‌شود. بعد اعداد را بررسی کن و دوباره «ساخت برنامه» را بزن.';$('dr').click();return}const r=genG(PR);if(r.err){$('dm').textContent='خطا: '+r.err;$('dm').scrollIntoView({block:'nearest'});return}
+$('src').value=r.code;const v={sd:PR.sd,fz:2,so:r.T+14,cz:'',bd:PR.hole||0};for(const k in v)$(k).value=v[k];$('it').value=PR.bT+','+PR.gT;$('tw').value=PR.gT+':'+PR.gW;$('dia').value='1';$('sys').value='A';run(false);
+$('dm').textContent='برنامه ساخته شد ('+r.code.split('\n').length+' خط) و در نمایشگر بارگذاری شد.'+(r.W.length?' '+r.W.join(' | '):'');$('dm').scrollIntoView({block:'nearest'})}catch(e){$('dm').textContent='خطای برنامه: '+e.message}};
+let SM=null;(window.claude?claude.use('sample'):Promise.resolve(null)).then(s=>{SM=s;if(!s&&!READ_URL){$('ak').hidden=false;try{$('ak').value=localStorage.getItem('ak')||''}catch(e){}$('dm').textContent='در نسخه‌ی دانلودشده، خواندن خودکار با کلید API شخصی خودت کار می‌کند (به اینترنت نیاز دارد و هزینه‌ی جزئی دارد). کلید را در کادر بالا بگذار، یا پله‌ها را دستی وارد کن.'}}).catch(()=>{});
+const READ_URL='',READ_TOKEN='';
+const PROMPT=`You are reading a mechanical drawing of a part that will be made on a CNC lathe. Return ONLY one JSON object, no markdown:
+{"overall_length":number|null,"dims_seen":["value = what it measures"],"stock_dia":number|null,"steps":[{"d":number,"l":number}],"front_chamfer":number,"end_chamfer":number,"fillet_radius":number,"shoulder_chamfer":number,"bore_dia":number|null,"confidence":"high"|"medium"|"low","notes":"Persian text"}
+Rules: only the OUTER turned profile. steps = outer diameter d and length l in mm, ordered along the axis starting from the end with the SMALLER diameter (front), so diameters never decrease. fillet_radius = concave fillet at inside shoulder corners (0 if none). shoulder_chamfer = chamfer on the outer edge of shoulders (0 if none). stock_dia only if the drawing states raw material size, else null. bore_dia = internal hole if any (not machined by this tool). In notes (Persian) list every dimension you could not read clearly, inconsistencies in the drawing, and features you did NOT include (bore, grooves, threads, gear teeth, keyways, tolerances). Read every dimension number printed on the drawing and list them all in dims_seen (Persian text). Check that the sum of the step lengths equals overall_length; if not, say so in notes. Never invent numbers silently: if unsure, give your best estimate and say so in notes.`;
+async function pdfToBlob(f){if(!window.pdfjsLib){await new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';s.onload=ok;s.onerror=()=>no(new Error('ابزار PDF بارگذاری نشد؛ از صفحه اسکرین‌شات بگیر'));document.head.append(s)});pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}
+const d=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise,pg=await d.getPage(1),vp=pg.getViewport({scale:2.5}),c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;return new Promise(r=>c.toBlob(r,'image/jpeg',.93))}
+async function shrink(f){const b=await createImageBitmap(f),k=Math.min(1,2400/Math.max(b.width,b.height)),c=document.createElement('canvas');c.width=Math.round(b.width*k);c.height=Math.round(b.height*k);c.getContext('2d').drawImage(b,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,'image/jpeg',.93))}
+$('dr').onclick=async()=>{const f=$('di').files[0]||DF;if(!f){$('dm').textContent='اول عکس یا PDF نقشه را انتخاب کن.';return}
+if(!SM&&!READ_URL&&!$('ak').value.trim()){$('dm').textContent='کلید API را در کادر بالا بگذار یا پله‌ها را دستی وارد کن.';return}$('dr').disabled=true;$('dm').textContent='در حال خواندن نقشه…';
+try{const img=await shrink(/pdf/i.test(f.type)||/\.pdf$/i.test(f.name)?await pdfToBlob(f):f);let j;
+if(SM){const lim=await SM.limits();if(!lim.images){$('dm').textContent='ارسال عکس در این نمایش فعال نیست.';return}j=await SM.json(PROMPT,{images:[img],modelTier:'complex',cache:false})}
+else{const b64=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(String(x.result).split(',')[1]);x.readAsDataURL(img)});if(READ_URL){const rs=await fetch(READ_URL,{method:'POST',headers:{'Content-Type':'application/json','X-Token':READ_TOKEN},body:JSON.stringify({image:b64})});if(!rs.ok)throw new Error('HTTP '+rs.status);j=await rs.json()}
+else{const k=$('ak').value.trim();try{localStorage.setItem('ak',k)}catch(e){}
+const rs=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:1500,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:PROMPT}]}]})});
+if(!rs.ok)throw new Error('HTTP '+rs.status+(rs.status==401?' (کلید نامعتبر)':''));
+const d=await rs.json(),t=(d.content||[]).map(c=>c.text||'').join(''),mm=t.match(/\{[\s\S]*\}/);if(!mm)throw new Error('پاسخ نامعتبر');j=JSON.parse(mm[0])}}
+const st=(j.steps||[]).map(s=>({d:+s.d||0,l:+s.l||0})).filter(s=>s.d>0&&s.l>0);
+PR.steps=st;PR.cf=+j.front_chamfer||0;PR.ce=+j.end_chamfer||0;PR.fr=+j.fillet_radius||0;PR.sc=+j.shoulder_chamfer||0;
+PR.sd=+j.stock_dia||Math.ceil(Math.max(0,...st.map(s=>s.d))+3);if(j.bore_dia>0)PR.bore=+j.bore_dia;pform();if(!st.length){$('dm').textContent='از این عکس هیچ پله‌ای نخواندم. روی نقشه باید قطر و طول هر پله به‌صورت عدد نوشته شده باشد؛ مقیاس‌بندی به‌تنهایی کافی نیست. عدد بنویس یا پله‌ها را دستی وارد کن.'+(j.notes?' | '+j.notes:'');return}
+$('dm').textContent='اطمینان: '+({high:'بالا',medium:'متوسط',low:'پایین'}[j.confidence]||'؟')+(j.bore_dia?' | سوراخ داخلی Ø'+j.bore_dia+' ثبت شد؛ قطر سوراخ اولیه و محل شیارها را خودت وارد کن':'')+' | '+(j.notes||'')+(j.overall_length&&Math.abs(st.reduce((a,s)=>a+s.l,0)-j.overall_length)>.05?' | ⚠ مجموع طول پله‌ها '+st.reduce((a,s)=>a+s.l,0)+' است ولی طول کل نقشه '+j.overall_length:'')+(j.dims_seen&&j.dims_seen.length?' | اعداد خوانده‌شده: '+j.dims_seen.join('، '):'')+' — اعداد را با نقشه تطبیق بده، بعد «ساخت برنامه» را بزن.'}
+catch(e){$('dm').textContent='خواندن ناموفق ('+((e&&(e.code||e.message))||'خطا')+'). می‌توانی پله‌ها را دستی وارد کنی.'}finally{$('dr').disabled=false}};
+pform();
+(function init(){let s=null;try{s=JSON.parse(localStorage.getItem('altay3'))}catch(e){}
+if(s&&s.t&&!BIN.test(s.t.slice(0,2000))){$('src').value=s.t;const ids=[...FLD.map(f=>f[0]),'dia','nd','sys','it','tw'];ids.forEach((k,i)=>{if(s.c&&s.c[i]!==undefined)$(k).value=s.c[i]})}else $('src').value=SAMPLE;
+run(false)})();
+</script>
+</body>
+</html>
